@@ -1,5 +1,5 @@
-resource "aws_security_group" "existing_rstudio_sg" {
-  vpc_id = aws_vpc.existing_rstudio_vpc.id
+resource "aws_security_group" "rstudio_sg" {
+  vpc_id = aws_vpc.rstudio_vpc.id
 
   ingress {
     from_port   = 22
@@ -14,8 +14,7 @@ resource "aws_security_group" "existing_rstudio_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  ingress {
+   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
@@ -28,15 +27,13 @@ resource "aws_security_group" "existing_rstudio_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  ingress {
+    ingress {
     from_port   = 9000
     to_port     = 9000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  ingress {
+    ingress {
     from_port   = 8787
     to_port     = 8787
     protocol    = "tcp"

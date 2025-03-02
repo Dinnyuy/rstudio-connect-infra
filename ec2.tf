@@ -1,11 +1,11 @@
-resource "aws_instance" "existing_rstudio" {
-  ami             = "ami-039c19f6de5d8bd93"  # Ubuntu 20.04 LTS AMI ID
+resource "aws_instance" "rstudio" {
+  ami             = "ami-039c19f6de5d8bd93"  # Ubuntu 20.04 LTS AMI ID (check AWS for latest)
   instance_type   = "t2.micro"
-  subnet_id       = aws_subnet.existing_public_subnet_1.id
-  security_groups = [aws_security_group.existing_rstudio_sg.id]
+  subnet_id       = aws_subnet.public_subnet_1.id
+  security_groups = [aws_security_group.rstudio_sg.id]
 
   tags = {
-    Name = "rstudio-server-test"
+    Name = "rstudio-server"
   }
 
   user_data = <<-EOF
@@ -16,6 +16,7 @@ resource "aws_instance" "existing_rstudio" {
               sudo gdebi -n rstudio-server-1.4.1106-amd64.deb
               sudo systemctl enable rstudio-server
               sudo systemctl start rstudio-server
+
 
               sudo apt install fontconfig openjdk-17-jre -y
               sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
@@ -28,16 +29,16 @@ resource "aws_instance" "existing_rstudio" {
               sudo systemctl enable jenkins
               sudo systemctl start jenkins
               EOF
-}
 
-resource "aws_instance" "existing_sonarqube" {
-  ami             = "ami-039c19f6de5d8bd93"  # Ubuntu 20.04 LTS AMI ID
+}
+resource "aws_instance" "sonarqube" {
+  ami             = "ami-039c19f6de5d8bd93"  # Ubuntu 20.04 LTS AMI ID (check AWS for latest)
   instance_type   = "t2.medium"
-  subnet_id       = aws_subnet.existing_public_subnet_1.id
-  security_groups = [aws_security_group.existing_rstudio_sg.id]
+  subnet_id       = aws_subnet.public_subnet_1.id
+  security_groups = [aws_security_group.rstudio_sg.id]
 
   tags = {
-    Name = "sonarqube-server-test"
+    Name = "sonarqube-server"
   }
 
   user_data = <<-EOF
@@ -46,12 +47,11 @@ resource "aws_instance" "existing_sonarqube" {
               sudo apt install fontconfig openjdk-17-jre -y
               
               # Install SonarQube
-              sudo apt-get install ca-certificates curl gnupg -y
+              sudo apt-get install ca-certificates curl gnupg
               sudo install -m 0755 -d /etc/apt/keyrings
-              sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg -y
               sudo chmod a+r /etc/apt/keyrings/docker.gpg
               sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-              sudo apt-get update
               sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
               sudo apt install docker-compose -y
               sudo service docker restart
